@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 using Minette.Util;
+using System.Collections.Generic;
 
 namespace Minette
 {
@@ -9,8 +10,11 @@ namespace Minette
         //メンバ変数
         public string DatabaseName { get; set; }
         public string TableName { get; set; }
+        private Dictionary<string, Session> InMemoryStore { get; set; }
         //コンストラクタ
-        public SessionManager() { }
+        public SessionManager() {
+            this.InMemoryStore = new Dictionary<string, Session>();
+        }
         public SessionManager(string databaseName, string tableName)
         {
             this.DatabaseName = databaseName;
@@ -21,8 +25,7 @@ namespace Minette
         {
             if (DatabaseName == null || TableName == null)
             {
-                System.Diagnostics.Debug.Print(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss") + "\t" + "Session store is not configured.");
-                return new Session(Id);
+                return InMemoryStore.ContainsKey(Id) ? InMemoryStore[Id] : new Session(Id);
             }
             var ConnectionStr = System.Configuration.ConfigurationManager.ConnectionStrings[DatabaseName].ConnectionString;
             using (var con = new SqlConnection(ConnectionStr))
@@ -59,6 +62,7 @@ namespace Minette
         {
             if (DatabaseName == null || TableName == null)
             {
+                InMemoryStore[session.Id] = session;
                 return;
             }
             var ConnectionStr = System.Configuration.ConfigurationManager.ConnectionStrings[DatabaseName].ConnectionString;
