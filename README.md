@@ -46,7 +46,6 @@ Default session manager uses memory or SQL Database but you can override and cha
 
 ### Built-in Japanese annotation
 If you are to make a Japanese speaking bot, you can annotate the input message by Minette MeCab Webservice. Just giving the tagger enabled parameter then you can pick the keywords(e.g.nouns) from the message very easily.
-
 ```csharp
 //Init the core
 var minette = new Minette.Core();
@@ -58,6 +57,9 @@ minette.Tagger.Enabled = true;
 //if Request.Text is "今日はいい天気です", nouns will be ["今日", "天気"]
 var nouns = Request.Words.Where(w => w.Part == "名詞").Select(w => w.Word);
 ```
+!! ATTENTION !! The availability and the performance of Minette MeCab Webservice are not guaranteed and we accept no responsibility for any loss resulting from using this service.
+
+If you want to use a service under the control of yourself, you can host your [webmecab](https://github.com/uezo/webmecab) and set it's URL to the tagger.
 
 
 ### Chatting ready
