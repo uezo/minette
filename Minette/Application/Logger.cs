@@ -28,7 +28,7 @@ namespace Minette.Application
                     using (var cmd = new SqlCommand("INSERT INTO " + TableName + " VALUES (@timestamp, @datastr)", con))
                     {
                         cmd.Parameters.Add("@timestamp", System.Data.SqlDbType.DateTime2);
-                        cmd.Parameters["@timestamp"].Value = DateTime.UtcNow.AddHours(9);
+                        cmd.Parameters["@timestamp"].Value = DateTime.Now;
                         cmd.Parameters.Add("@datastr", System.Data.SqlDbType.NVarChar);
                         cmd.Parameters["@datastr"].Value = message;
                         cmd.ExecuteNonQuery();

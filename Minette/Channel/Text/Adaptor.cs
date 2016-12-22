@@ -28,7 +28,7 @@ namespace Minette.Channel.Text
             try
             {
                 //リクエストのセットアップ
-                var req = new Request(userId + "_" + DateTime.UtcNow.AddHours(9).ToString("yyyyMMddHHmmss"), "Text");
+                var req = new Request(userId + "_" + DateTime.Now.ToString("yyyyMMddHHmmss"), "Text");
                 req.IsPrivate = true;
                 req.Text = inputMessage;
                 req.User = UserManager.GetUser(userId);

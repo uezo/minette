@@ -18,7 +18,7 @@ PM> Install-Package Minette
 - Session management
 - Built-in Japanese annotation
 - Chatting ready
-- Sample adaptors (includes LINE)
+- Sample adaptors (include LINE)
 
 ### Easy to develop
 You can initialize the Minette just writing 1 line. 
@@ -37,24 +37,31 @@ while (true)
 
 ### High reusability
 You can create another DialogService by extend or override an existing DialogService.
-For example, you already have a DialogService that specify the station, you can reuse it and can make "Train Timetable", "Find Restaurant" and any other DialogServices that use station name.
+For example, if you already have a DialogService that specify the station, you can reuse it and can make "Train Timetable", "Find Restaurant" and any other DialogServices that use station name.
 
 
 ### Session Management
-Minette has a data store that enables your bot to continue conversasion accross the requests like HTTP Session.
-Default session manager uses the SQL Database but you can override and change to any database you like.
+Minette provides a data store that enables your bot to continue conversasion accross the requests like HTTP Session.
+Default session manager uses memory or SQL Database but you can override and change to any database you like.
 
 ### Built-in Japanese annotation
 If you are to make a Japanese speaking bot, you can annotate the input message by Minette MeCab Webservice. Just giving the tagger enabled parameter then you can pick the keywords(e.g.nouns) from the message very easily.
+
 ```csharp
 //Init the core
 var minette = new Minette.Core();
 //Set enabled/disabled Japanese Tagger
 minette.Tagger.Enabled = true;
+  :
+  :
+//In Classifier or DialogService
+//if Request.Text is "今日はいい天気です", nouns will be ["今日", "天気"]
+var nouns = Request.Words.Where(w => w.Part == "名詞").Select(w => w.Word);
 ```
 
+
 ### Chatting ready
-Minette has a DialogService for chatting based on NTT Docomo API. Just input your API Key and set the DialogService then your bot speaks like a human.
+Minette has a DialogService for chatting based on [NTT docomo API](https://dev.smt.docomo.ne.jp/?p=docs.api.page&api_name=dialogue&p_name=api_usage_scenario). Just input your API Key and set the DialogService then your bot speaks like a human.
 ```csharp
 Session.DialogService = new Minette.Application.ChatDialog("<Input your API Key>");
 ```
@@ -75,7 +82,7 @@ Because catching up the changes of API of all channels quickly is very hard for 
 
 - Core : Core of this framework. Runs the flow by using Classifier and DialogServices
 - Classifier : Classify the topic of user message and setup the proper DialogService to process the message
-- DialogService(s) : Implements of the flow of dialog. This class has following 2 methods:
+- DialogService(s) : The main logic that manages the flow of dialog. This class has following 2 methods:
 - ProcessRequest : Setting up the session data by using user input message
 - ComposeResponse : Making response message by using session data
 - Adaptor : Maps the request / response from channel dependent to Minette common
@@ -91,7 +98,7 @@ Because catching up the changes of API of all channels quickly is very hard for 
 
 
 ## Sample Codes
-First of all create a new Command Line App Project and install Minette from nuget.
+First of all, create a new Command Line App Project and install Minette from [NuGet](https://www.nuget.org/packages/Minette).
 
 ### Echo Bot
 Add this code to the Main in Program.cs
@@ -150,7 +157,7 @@ namespace SampleApp
 ```
 
 ### Chatting Bot
-Just chatting is very easy. You need to get Docomo API key before running this code.
+Just chatting is very easy. You need to get [docomo API](https://dev.smt.docomo.ne.jp/?p=docs.api.page&api_name=dialogue&p_name=api_usage_scenario) key before running this code.
 ```csharp
 namespace SampleApp
 {
@@ -216,8 +223,10 @@ namespace SampleApp
     {
         public override void GetClassified()
         {
+
             //message is a number -> Your DialogService
-            if (request.Text.Contains("1"))
+            int i;
+            if(int.TryParse(Request.Text, out i))
             {
                 Session.DialogService = new DialogService();
             }

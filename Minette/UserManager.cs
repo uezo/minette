@@ -62,7 +62,7 @@ namespace Minette
                 using (var cmd = new SqlCommand(sql, con))
                 {
                     cmd.Parameters.Add("@Timestamp", System.Data.SqlDbType.DateTime2);
-                    cmd.Parameters["@Timestamp"].Value = DateTime.UtcNow.AddHours(9);
+                    cmd.Parameters["@Timestamp"].Value = DateTime.Now;
                     cmd.Parameters.Add("@Id", System.Data.SqlDbType.NVarChar);
                     cmd.Parameters["@Id"].Value = user.Id;
                     cmd.Parameters.Add("@Name", System.Data.SqlDbType.NVarChar);

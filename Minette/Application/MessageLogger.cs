@@ -24,7 +24,7 @@ namespace Minette.Application
             this.StartTick = Environment.TickCount;
             this.Channel = Channel;
             this.TotalTick = 0;
-            this.Timestamp = DateTime.UtcNow.AddHours(9);
+            this.Timestamp = DateTime.Now;
             this.UserId = "";
             this.UserName = "";
             this.EventType = EventType.Message;
@@ -37,7 +37,7 @@ namespace Minette.Application
             this.StartTick = Environment.TickCount;
             this.Channel = channel;
             this.TotalTick = 0;
-            this.Timestamp = DateTime.UtcNow.AddHours(9);
+            this.Timestamp = DateTime.Now;
             this.UserId = "";
             this.UserName = "";
             this.EventType = EventType.Message;
