@@ -1,0 +1,46 @@
+﻿@using Minette;
+@using Minette.Application;
+@using System.Web.Hosting;
+
+@{
+    const string DatabaseName = "<input database defined in Web.config>";
+    var logger = new Logger(DatabaseName, "<Log Table>");
+    try
+    {
+        ////Verify Token
+        //var verifier = Request["hub.verify_token"] ?? "";
+        //if(verifier == "****")
+        //{
+        //    Response.Write(Request["hub.challenge"]);
+        //}
+
+        //Get data from Webhook
+        var bytesData = Request.BinaryRead(Request.ContentLength);
+        var encodedString = System.Text.Encoding.UTF8.GetString(bytesData);
+        var decodedString = System.Web.HttpUtility.UrlDecode(encodedString, System.Text.Encoding.UTF8);
+
+        //Init Core
+        var minette = new Minette.Core();
+        //Classifier
+        minette.Classifier = new Classifier();
+        //SessionManager
+        minette.SessionManager = new SessionManager(DatabaseName, "<Session Table>");
+        //Logger
+        minette.Logger = logger;
+
+        //Init Adaptor
+        var adaptor = new Minette.Channel.Facebook.Adaptor();
+        //AccessToken
+        adaptor.AccessToken = "<input your access token>";
+        //MinetteCore
+        adaptor.MinetteCore = minette;
+        //UserManager
+        adaptor.UserManager = new UserManager(DatabaseName, "<User Table>", "Facebook");
+        //Execute
+        HostingEnvironment.QueueBackgroundWorkItem(token => adaptor.ProcessRequestAsync(token, decodedString));
+    }
+    catch (Exception ex)
+    {
+        logger.Write("AdaptorError : " + ex.Message + "\n" + ex.StackTrace);
+    }
+}
