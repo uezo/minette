@@ -125,7 +125,7 @@ namespace SampleApp
 {
     public class Classifier : Minette.Application.Classifier
     {
-        public override void GetClassified()
+        public override void Classify()
         {
             Session.Data = "Hello, Minette!";
         }
@@ -134,13 +134,13 @@ namespace SampleApp
 ```
 
 ### Switching by input message
-Modify the GetClassified method like below
+Modify the Classify method like below
 ```csharp
 namespace SampleApp
 {
     public class Classifier : Minette.Application.Classifier
     {
-        public override void GetClassified()
+        public override void Classify()
         {
             if (Request.Text == "morning")
             {
@@ -165,7 +165,7 @@ namespace SampleApp
 {
     public class Classifier : Minette.Application.Classifier
     {
-        public override void GetClassified()
+        public override void Classify()
         {
             Session.DialogService = new Minette.Application.ChatDialog("<Input your API Key>");
         }
@@ -208,7 +208,7 @@ namespace SampleApp
 {
     public class Classifier : Minette.Application.Classifier
     {
-        public override void GetClassified()
+        public override void Classify()
         {
             Session.DialogService = new DialogService();
         }
@@ -223,7 +223,7 @@ namespace SampleApp
 {
     public class Classifier : Minette.Application.Classifier
     {
-        public override void GetClassified()
+        public override void Classify()
         {
 
             //message is a number -> Your DialogService

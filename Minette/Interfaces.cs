@@ -8,7 +8,9 @@ namespace Minette
         Request Request { get; set; }
         Session Session { get; set; }
         ILogger Logger { get; set; }
+        [Obsolete("Deprecated. Use Classify() instead.")]
         void GetClassified();
+        void Classify();
     }
     public interface ISessionManager
     {

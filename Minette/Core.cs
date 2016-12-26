@@ -24,26 +24,29 @@ namespace Minette
             this.Debug = false;
         }
 
-        //呼び出し
-        public Response Execute(Request req)
+        /// <summary>
+        /// Execute bot program
+        /// </summary>
+        /// <param name="request">Request converted from channel request</param>
+        public Response Execute(Request request)
         {
-            var res = new Response(req.MessageId, ResponseType.Text);
+            var res = new Response(request.MessageId, ResponseType.Text);
             res.Text = "？";
-            req.Words = Tagger.Parse(req.Text);
-            var session = SessionManager.GetSession(req.Channel + "::" + req.User.ChannelId);
-            session.User = req.User;
+            request.Words = Tagger.Parse(request.Text);
+            var session = SessionManager.GetSession(request.Channel + "::" + request.User.ChannelId);
+            session.User = request.User;
             var LogLines = "";
             try
             {
                 LogLines += "[minette]Start : " + Json.Encode(session) + "\n";
                 //話題の判定
-                Classifier.Request = req;
+                Classifier.Request = request;
                 Classifier.Session = session;
                 Classifier.Logger = Logger;
-                Classifier.GetClassified();
+                Classifier.Classify();
                 LogLines += "[minette]Mode=" + session.Mode + " : " + Json.Encode(session) + "\n";
                 //ダイアログの準備
-                session.DialogService.Request = req;
+                session.DialogService.Request = request;
                 session.DialogService.Session = session;
                 session.DialogService.Logger = Logger;
                 //処理の実行
