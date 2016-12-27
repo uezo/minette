@@ -78,7 +78,7 @@ namespace Minette
             else
             {
                 //データが未格納の場合は生成処理を行って格納
-                this.Data = newTDelagate;
+                this.Data = newTDelagate();
             }
             return this.Data;
         }

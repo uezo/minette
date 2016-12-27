@@ -39,7 +39,18 @@ namespace Minette
         {
             if (DatabaseName == null || TableName == null)
             {
-                return InMemoryStore.ContainsKey(Id) && DateTime.Now <= InMemoryStore[Id].Key.AddSeconds(Timeout) ? InMemoryStore[Id].Value : new Session(Id);
+                var sess = InMemoryStore.ContainsKey(Id) && DateTime.Now <= InMemoryStore[Id].Key.AddSeconds(Timeout) ? InMemoryStore[Id].Value : new Session(Id);
+                sess.KeepMode = false;
+                sess.DialogService = new Minette.Application.DialogService();
+                if(sess.Mode != "")
+                {
+                    sess.ModeStatus = ModeStatus.Continue;
+                }
+                else
+                {
+                    sess.ModeStatus = ModeStatus.Start;
+                }
+                return sess;
             }
             var ConnectionStr = System.Configuration.ConfigurationManager.ConnectionStrings[DatabaseName].ConnectionString;
             using (var con = new SqlConnection(ConnectionStr))
