@@ -3,13 +3,35 @@ using Minette.Util;
 
 namespace Minette
 {
+    /// <summary>
+    /// Request user
+    /// </summary>
     public class User
     {
+        /// <summary>
+        /// Identifier of the user
+        /// </summary>
         public string Id { get; set; }
+        /// <summary>
+        /// Name
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Nickname
+        /// </summary>
         public string NickName { get; set; }
+        /// <summary>
+        /// Channel specific user ID like Twitter UserId
+        /// </summary>
         public string ChannelId { get; set; }
+        /// <summary>
+        /// Stringified data with key
+        /// </summary>
         public Dictionary<string, string> Data { get; set; }
+
+        /// <summary>
+        /// New User
+        /// </summary>
         public User()
         {
             this.Id = "";
@@ -19,6 +41,10 @@ namespace Minette
             this.Data = new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// New User with User ID
+        /// </summary>
+        /// <param name="Id">User ID</param>
         public User(string userId)
         {
             this.Id = userId;
@@ -28,6 +54,10 @@ namespace Minette
             this.Data = new Dictionary<string, string>();
         }
 
+        /// <summary>
+        /// Restored User from default database
+        /// </summary>
+        /// <param name="r">A record from user table</param>
         public User(dynamic r)
         {
             this.Id = (string)r["Id"];

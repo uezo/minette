@@ -5,23 +5,59 @@ using Newtonsoft.Json.Linq;
 namespace Minette
 {
     public enum ModeStatus { Start = 1, Continue, End };
-    //セッションのデータ型
+    /// <summary>
+    /// Data container across the requests
+    /// </summary>
     public class Session
     {
+        /// <summary>
+        /// The key for SessionManager
+        /// </summary>
         public string Id { get; set; }
+        /// <summary>
+        /// Indicates that the session was just created in the currently processing request
+        /// </summary>
         public bool IsNew { get; set; }
+        /// <summary>
+        /// User. Updates to Data, Name and NickName property are saved by UserManager
+        /// </summary>
         public User User { get; set; }
+        /// <summary>
+        /// Get or Set the topic of current conversasion. Useful in classifying the request in continuing conversasion
+        /// </summary>
         public string Mode { get; set; }
+        /// <summary>
+        /// Indicates the Mode is continuing or just started
+        /// </summary>
         public ModeStatus ModeStatus { get; set; }
+        /// <summary>
+        /// Set true if you want to use the Mode and Data in the next request. Default is false
+        /// </summary>
         public bool KeepMode { get; set; }
         public string PreviousMode { get; set; }
+        /// <summary>
+        /// Get or Set the topic of current status of specific dialog. Useful in processing the request and composing the response message
+        /// </summary>
         public string DialogStatus { get; set; }
+        /// <summary>
+        /// The context Id of docomo Chat API
+        /// </summary>
         public string ChatContext { get; set; }
+        /// <summary>
+        /// Get or Set the data used in DialogServices
+        /// </summary>
         public dynamic Data { get; set; }
 
+        /// <summary>
+        /// Set a DialogService in Classifier#Classify() to process the request
+        /// </summary>
         [JsonIgnore]
         public IDialogService DialogService { get; set; }
 
+        /// <summary>
+        /// New Session with Session ID
+        /// </summary>
+        /// <param name="Id">Session ID</param>
         public Session(string Id)
         {
             this.Id = Id;
@@ -34,6 +70,11 @@ namespace Minette
             this.ChatContext = "";
             this.DialogService = new Minette.Application.DialogService();
         }
+
+        /// <summary>
+        /// Restored Session from default database
+        /// </summary>
+        /// <param name="r">A record from session table</param>
         public Session(dynamic r)
         {
             this.Id = (string)r["Id"];
@@ -48,6 +89,12 @@ namespace Minette
             this.Data = Json.Decode(d);
             this.DialogService = new Minette.Application.DialogService();
         }
+
+        /// <summary>
+        /// Restore or create the type specified data
+        /// </summary>
+        /// <returns>Default value for return when the Data properties is empty</returns>
+        /// <returns>Reference to Data property</returns>
         public virtual T RestoreData<T>(T defaultValue)
         {
             if (this.Data is T)
@@ -64,6 +111,12 @@ namespace Minette
             }
             return this.Data;
         }
+
+        /// <summary>
+        /// Restore or create the type specified data
+        /// </summary>
+        /// <returns>Delegate to create the default value for return when the Data properties is empty</returns>
+        /// <returns>Reference to Data property</returns>
         public virtual T RestoreData<T>(NewTDelegate<T> newTDelagate)
         {
             if (this.Data is T)

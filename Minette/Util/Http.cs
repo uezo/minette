@@ -5,6 +5,12 @@ namespace Minette.Util
     //UTFのみ、ヘッダー未対応
     public static class Http
     {
+        /// <summary>
+        /// Send the GET request
+        /// </summary>
+        /// <param name="url">Url to send request</param>
+        /// <param name="param">Query parameters</param>
+        /// <returns>Content of response body</returns>
         public static string Get(string url, Dictionary<string, string> param)
         {
             if (param.Count > 0)
@@ -30,6 +36,12 @@ namespace Minette.Util
             return ret;
         }
 
+        /// <summary>
+        /// Send the POST request
+        /// </summary>
+        /// <param name="url">Url to send request</param>
+        /// <param name="param">Parameters to send</param>
+        /// <returns></returns>
         public static string Post(string url, Dictionary<string, string> param)
         {
             var wc = new System.Net.WebClient();
@@ -43,6 +55,12 @@ namespace Minette.Util
             return System.Text.Encoding.UTF8.GetString(resData);
         }
 
+        /// <summary>
+        /// Post JSON data
+        /// </summary>
+        /// <param name="url">Url to send JSON</param>
+        /// <param name="data">Data to be encoded to JSON format and sent</param>
+        /// <returns></returns>
         public static string PostJson(string url, object data)
         {
             var req = System.Net.WebRequest.Create(url);

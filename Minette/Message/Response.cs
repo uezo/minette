@@ -4,17 +4,49 @@ using Minette.Message.Attachment;
 namespace Minette.Message
 {
     public enum ResponseType { Text = 1, Image, Video, Audio, Sticker, Template, QuickReply }
+    /// <summary>
+    /// Response to user
+    /// </summary>
     public class Response
     {
+        /// <summary>
+        /// Type of response. Text, Image, Video, Audio, Sticker, Template or QuickReply.
+        /// </summary>
         public ResponseType Type { get; set; }
+        /// <summary>
+        /// Identifier of response
+        /// </summary>
         public string MessageId { get; set; }
+        /// <summary>
+        /// Body text
+        /// </summary>
         public string Text { get; set; }
+        /// <summary>
+        /// Url of attached image
+        /// </summary>
         public string ImageUrl { get; set; }
+        /// <summary>
+        /// Url of attached image for preview
+        /// </summary>
         public string PreviewImageUrl { get; set; }
+        /// <summary>
+        /// Sticker info
+        /// </summary>
         public Sticker Sticker { get; set; }
+        /// <summary>
+        /// List of template applied messages
+        /// </summary>
         public List<Template> Templates { get; set; }
+        /// <summary>
+        /// List of QuickReplies
+        /// </summary>
         public List<QuickReply> QuickReplies { get; set; }
 
+        /// <summary>
+        /// Create a new Response with message ID and the type of response
+        /// </summary>
+        /// <param name="messageId">Message ID</param>
+        /// <param name="type">Response type</param>
         public Response(string messageId, ResponseType type)
         {
             this.MessageId = messageId;
@@ -32,12 +64,23 @@ namespace Minette.Message
                 this.QuickReplies = new List<QuickReply>();
             }
         }
+        /// <summary>
+        /// Create a new Text Response with message ID and the body
+        /// </summary>
+        /// <param name="messageId">Message ID</param>
+        /// <param name="text">Body text</param>
         public Response(string messageId, string text)
         {
             this.Type = ResponseType.Text;
             this.MessageId = messageId;
             this.Text = text;
         }
+        /// <summary>
+        /// Create a new Image Response with message ID and the urls
+        /// </summary>
+        /// <param name="messageId">Message ID</param>
+        /// <param name="imageUrl">Url of image</param>
+        /// <param name="previewUrl">Url of image for preview</param>
         public Response(string messageId, string imageUrl, string previewUrl)
         {
             this.Type = ResponseType.Image;
@@ -45,6 +88,15 @@ namespace Minette.Message
             this.ImageUrl = imageUrl;
             this.PreviewImageUrl = previewUrl;
         }
+        /// <summary>
+        /// Create a new Confirmation Response
+        /// </summary>
+        /// <param name="title">Title of confirmation message box</param>
+        /// <param name="text">Body text of confirmation message box</param>
+        /// <param name="yesLabel">Label for YES button</param>
+        /// <param name="yesData">Data for YES button</param>
+        /// <param name="noLabel">Label for NO button</param>
+        /// <param name="noData">Data for NO button</param>
         public void SetConfirmTemplate(string title, string text, string yesLabel, string yesData, string noLabel, string noData)
         {
             var t = new Template(TemplateType.Confirm);

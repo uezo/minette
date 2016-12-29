@@ -2,18 +2,24 @@
 
 namespace Minette.Application
 {
-    public class ChatDialog : IDialogService
+    /// <summary>
+    /// DialogService for chatting with docomo API
+    /// </summary>
+    public class ChatDialog : DialogService
     {
-        public Request Request { get; set; }
-        public Session Session { get; set; }
-        public ILogger Logger { get; set; }
+        /// <summary>
+        /// docomo API Key
+        /// </summary>
         public string ApiKey { get; set; }
 
+        /// <summary>
+        /// Initialize with API Key
+        /// </summary>
         public ChatDialog(string apiKey) {
             this.ApiKey = apiKey;
         }
 
-        public void ProcessRequest()
+        public override void ProcessRequest()
         {
             var d = new Minette.WebService.Docomo.Dialogue(ApiKey, Logger);
             Session.Data = d.Chat(Request.Text, Session).Replace("26歳", "16歳");
@@ -23,7 +29,7 @@ namespace Minette.Application
             }
         }
 
-        public Response ComposeResponse()
+        public override Response ComposeResponse()
         {
             var ret = new Response(Request.MessageId, ResponseType.Text);
             ret.Text = (string)Session.Data;

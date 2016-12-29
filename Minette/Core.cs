@@ -5,16 +5,32 @@ using Minette.Application;
 
 namespace Minette
 {
-    //フレームワークコア機能
+    /// <summary>
+    /// The core of the Minette Framework
+    /// </summary>
     public class Core
     {
+        /// <summary>
+        /// Mode classifier. Understand the topic and setup a proper DialogService
+        /// </summary>
         public IClassifier Classifier { get; set; }
+        /// <summary>
+        /// Session manager. Get/Save the session
+        /// </summary>
         public ISessionManager SessionManager { get; set; }
+        /// <summary>
+        /// Global logger in this framework
+        /// </summary>
         public ILogger Logger { get; set; }
+        /// <summary>
+        /// Morpheme annotation engine
+        /// </summary>
         public ITagger Tagger { get; set; }
         public bool Debug { get; set; }
 
-        //コンストラクタ
+        /// <summary>
+        /// Create the Core initialized with defaults
+        /// </summary>
         public Core()
         {
             this.Classifier = new Classifier();
@@ -25,7 +41,7 @@ namespace Minette
         }
 
         /// <summary>
-        /// Execute bot program
+        /// Execute the bot application
         /// </summary>
         /// <param name="request">Request converted from channel request</param>
         public Response Execute(Request request)
@@ -76,7 +92,7 @@ namespace Minette
         }
     }
 
-    //形態素データ型
+    //Japanese morpheme
     public class MecabNode
     {
         public string Word { get; set; }

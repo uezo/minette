@@ -5,36 +5,70 @@ using System.Collections.Generic;
 
 namespace Minette
 {
+    /// <summary>
+    /// Default session manager. Get/Save the session
+    /// </summary>
     public class SessionManager : ISessionManager
     {
-        //メンバ変数
+        /// <summary>
+        /// Database name to connect
+        /// </summary>
         public string DatabaseName { get; set; }
+        /// <summary>
+        /// Session table name !!CAUTION!! DO NOT SET A VALUE FROM USER INPUT
+        /// </summary>
         public string TableName { get; set; }
+        /// <summary>
+        /// Session timeout (seconds)
+        /// </summary>
         public int Timeout { get; set; }
         private Dictionary<string, KeyValuePair<DateTime, Session>> InMemoryStore { get; set; }
-        //コンストラクタ
+
+        /// <summary>
+        /// Create a new InMemory Session Manager(Timeout=300sec)
+        /// </summary>
         public SessionManager() {
             this.InMemoryStore = new Dictionary<string, KeyValuePair<DateTime, Session>>();
             this.Timeout = 300;
         }
+        /// <summary>
+        /// Create a new InMemory Session Manager
+        /// </summary>
+        /// <param name="timeout">Timeout after this value(seconds)</param>
         public SessionManager(int timeout)
         {
             this.InMemoryStore = new Dictionary<string, KeyValuePair<DateTime, Session>>();
             this.Timeout = timeout;
         }
+        /// <summary>
+        /// Create a new Database Session Manager
+        /// </summary>
+        /// <param name="databaseName">Database to connect</param>
+        /// <param name="tableName">Session table name</param>
         public SessionManager(string databaseName, string tableName)
         {
             this.DatabaseName = databaseName;
             this.TableName = tableName;
             this.Timeout = 300;
         }
+        /// <summary>
+        /// Create a new Database Session Manager
+        /// </summary>
+        /// <param name="databaseName">Database to connect</param>
+        /// <param name="tableName">Session table name</param>
+        /// <param name="timeout">Timeout after this value(seconds)</param>
         public SessionManager(string databaseName, string tableName, int timeout)
         {
             this.DatabaseName = databaseName;
             this.TableName = tableName;
             this.Timeout = timeout;
         }
-        //セッションの取得
+
+        /// <summary>
+        /// Get session from data store by session ID or create a new session with ID
+        /// </summary>
+        /// <param name="Id">Key for session</param>
+        /// <returns>Stored or new session</returns>
         public Session GetSession(string Id)
         {
             if (DatabaseName == null || TableName == null)
@@ -82,7 +116,11 @@ namespace Minette
             }
             return new Session(Id);
         }
-        //セッションの保存
+
+        /// <summary>
+        /// Save session to data store
+        /// </summary>
+        /// <param name="session">Session to save</param>
         public void SaveSession(Session session)
         {
             if (DatabaseName == null || TableName == null)

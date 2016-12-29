@@ -3,16 +3,35 @@ using System.Data.SqlClient;
 
 namespace Minette.Application
 {
+    /// <summary>
+    /// Simple logger
+    /// </summary>
     public class Logger : ILogger
     {
+        /// <summary>
+        /// Database name to connect
+        /// </summary>
         public string DatabaseName { get; set; }
+        /// <summary>
+        /// Session table name !!CAUTION!! DO NOT SET A VALUE FROM USER INPUT
+        /// </summary>
         public string TableName { get; set; }
+        /// <summary>
+        /// Create a new logger
+        /// </summary>
         public Logger() { }
+        /// <summary>
+        /// Create a new logger with data store info
+        /// </summary>
         public Logger(string databaseName, string tableName)
         {
             this.DatabaseName = databaseName;
             this.TableName = tableName;
         }
+        /// <summary>
+        /// Write log message
+        /// </summary>
+        /// <param name="message">String to be logged</param>
         public void Write(string message)
         {
             if (DatabaseName == null || TableName == null)
@@ -37,5 +56,4 @@ namespace Minette.Application
             }
         }
     }
-
 }

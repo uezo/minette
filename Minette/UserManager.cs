@@ -4,18 +4,43 @@ using Minette.Util;
 
 namespace Minette
 {
+    /// <summary>
+    /// Default user manager. Get/Save the user
+    /// </summary>
     public class UserManager : IUserManager
     {
+        /// <summary>
+        /// Database name to connect
+        /// </summary>
         public string DatabaseName { get; set; }
+        /// <summary>
+        /// User table name !!CAUTION!! DO NOT SET A VALUE FROM USER INPUT
+        /// </summary>
         public string TableName { get; set; }
+        /// <summary>
+        /// Column of channel user ID in user table !!CAUTION!! DO NOT SET A VALUE FROM USER INPUT
+        /// </summary>
         public string ColumnName { get; set; }
+
+        /// <summary>
+        /// Create a user manager
+        /// </summary>
         public UserManager() { }
+        /// <summary>
+        /// Create a user manager with the data store info
+        /// </summary>
         public UserManager(string databaseName, string tableName, string userIdColumnName)
         {
             this.DatabaseName = databaseName;
             this.TableName = tableName;
             this.ColumnName = userIdColumnName;
         }
+
+        /// <summary>
+        /// Get user from data store by channel user ID or create a new user with ID
+        /// </summary>
+        /// <param name="channelUserId">Channel specific user ID</param>
+        /// <returns>Stored or new user</returns>
         public User GetUser(string channelUserId)
         {
             if (DatabaseName == null || TableName == null || ColumnName == null)
@@ -48,6 +73,11 @@ namespace Minette
             }
             return new User(ColumnName + "::" + channelUserId) { ChannelId = channelUserId };
         }
+
+        /// <summary>
+        /// Save user to data store
+        /// </summary>
+        /// <param name="session">User to save</param>
         public void SaveUser(User user)
         {
             if (DatabaseName == null || TableName == null || ColumnName == null)
