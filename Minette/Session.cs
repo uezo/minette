@@ -109,7 +109,7 @@ namespace Minette
             {
                 this.Data = defaultValue;
             }
-            return this.Data;
+            return (T)this.Data;
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Minette
                 //データが未格納の場合は生成処理を行って格納
                 this.Data = newTDelagate();
             }
-            return this.Data;
+            return (T)this.Data;
         }
         public delegate T NewTDelegate<T>();
     }
