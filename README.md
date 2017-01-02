@@ -76,6 +76,8 @@ Session.DialogService = new Minette.Application.ChatDialog("<Input your API Key>
 
 Because catching up the changes of API of all channels quickly is very hard for me, so Minette provides the channel adaptors as samples.
 
+Note: At Jan 2 2016, Facebook adaptor supports just text, template and quickreply messages. LINE adaptor supports just text, sticker and template messages.
+
 
 
 ## Architecture

@@ -81,16 +81,6 @@ namespace Minette.Channel.Facebook
                 {
                     fbres.SetTextMessage(res.Text);
                 }
-                //画像
-                else if (res.Type == ResponseType.Image)
-                {
-                    //未実装
-                }
-                //スタンプ
-                else if (res.Type == ResponseType.Sticker)
-                {
-                    //未実装
-                }
                 //テンプレート
                 else if (res.Type == ResponseType.Template)
                 {
@@ -111,6 +101,11 @@ namespace Minette.Channel.Facebook
                 else if (res.Type == ResponseType.QuickReply)
                 {
                     fbres.SetQuickReplyMessage(res.Text, res.QuickReplies);
+                }
+                //except Text, Template and QuickReply is not supported now.
+                else
+                {
+                    fbres.SetTextMessage(res.Text);
                 }
                 await SendResponseAsync(fbres);
             }

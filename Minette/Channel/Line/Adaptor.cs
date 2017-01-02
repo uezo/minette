@@ -81,13 +81,17 @@ namespace Minette.Channel.Line
 
                 //レスポンスのセットアップ
                 var lineres = new Response(linereq.ReplyToken);
+
+                //テキスト
+                if (res.Type == ResponseType.Text)
+                {
+                    lineres.addTextMessage(res.Text);
+                }
                 //スタンプ
-                if (res.Type == ResponseType.Sticker)
+                else if (res.Type == ResponseType.Sticker)
                 {
                     lineres.AddStickerMessage(res.Sticker.PackageId, res.Sticker.StickerId);
                 }
-                //画像
-
                 //テンプレート
                 else if (res.Type == ResponseType.Template)
                 {
@@ -103,11 +107,8 @@ namespace Minette.Channel.Line
                     {
                         lineres.AddCarouselMessage(res);
                     }
-
-                    MinetteCore.Logger.Write("[LINE]res : " + Json.Encode(lineres));
                 }
-
-                //それ以外
+                //それ以外（テキスト・スタンプ・テンプレート以外は現時点で未対応）
                 else
                 {
                     lineres.addTextMessage(res.Text);
