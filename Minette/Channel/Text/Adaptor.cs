@@ -32,6 +32,7 @@ namespace Minette.Channel.Text
                 req.IsPrivate = true;
                 req.Text = inputMessage;
                 req.User = UserManager.GetUser(userId);
+                req.User.ChannelId = userId;
                 MessageLogger.InputText = req.Text;
                 MessageLogger.UserId = req.User.Id;
                 MessageLogger.UserName = req.User.Name;
