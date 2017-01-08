@@ -86,11 +86,13 @@ namespace Minette.Channel.Line
                 if (res.Type == ResponseType.Text)
                 {
                     lineres.addTextMessage(res.Text);
+                    MessageLogger.OutputText = res.Text;
                 }
                 //スタンプ
                 else if (res.Type == ResponseType.Sticker)
                 {
                     lineres.AddStickerMessage(res.Sticker.PackageId, res.Sticker.StickerId);
+                    MessageLogger.OutputText = "sticker: " + res.Sticker.PackageId + "/" + res.Sticker.StickerId;
                 }
                 //テンプレート
                 else if (res.Type == ResponseType.Template)
@@ -107,14 +109,34 @@ namespace Minette.Channel.Line
                     {
                         lineres.AddCarouselMessage(res);
                     }
+                    MessageLogger.OutputText = "templates: " + Json.Encode(res.Templates);
                 }
                 //それ以外（テキスト・スタンプ・テンプレート以外は現時点で未対応）
                 else
                 {
                     lineres.addTextMessage(res.Text);
+                    MessageLogger.OutputText = res.Text;
                 }
+
+                //テンプレートメッセージ以外でテンプレートがあればメッセージを追加
+                if (res.Type != ResponseType.Template && res.Templates != null && res.Templates.Count > 0)
+                {
+                    if (res.Templates[0].Type == TemplateType.Confirm)
+                    {
+                        lineres.AddConfirmMessage(res);
+                    }
+                    else if (res.Templates.Count == 1)
+                    {
+                        lineres.AddButtonMessage(res);
+                    }
+                    else
+                    {
+                        lineres.AddCarouselMessage(res);
+                    }
+                    MessageLogger.OutputText += " / additional templates: " + Json.Encode(res.Templates);
+                }
+
                 //レスポンスの送信
-                MessageLogger.OutputText = res.Text;
                 await SendResponseAsync(lineres);
             }
             catch (Exception ex)
@@ -133,6 +155,10 @@ namespace Minette.Channel.Line
             req.Method = "POST";
             req.ContentType = "application/json; charset=UTF-8";
             var reqJson = Json.Encode(res);
+            if (MinetteCore.Debug == true)
+            {
+                MinetteCore.Logger.Write("[LINE]res : " + reqJson);
+            }
             byte[] postDataBytes = System.Text.Encoding.UTF8.GetBytes(reqJson);
             req.ContentLength = postDataBytes.Length;
             var reqStream = req.GetRequestStream();

@@ -20,29 +20,11 @@ namespace Minette.Channel.Facebook
             this.Message.Text = text;
         }
 
-        public void SetConfirmMessage(string text, List<Minette.Message.Attachment.Button> buttons)
-        {
-            this.Message.Attachment = new Attachment(AttachmentType.template);
-            this.Message.Attachment.Payload = new Payload(TemplateType.button);
-            this.Message.Attachment.Payload.Text = text;
-            foreach (var b in buttons)
-            {
-                if (b.Type == Minette.Message.ButtonType.Postback)
-                {
-                    this.Message.Attachment.Payload.Buttons.Add(new Button(ButtonType.postback, b.Title, b.Payload));
-                }
-                else
-                {
-                    this.Message.Attachment.Payload.Buttons.Add(new Button(ButtonType.web_url, b.Title, b.Url));
-                }
-            }
-        }
-
-        public void SetButtonMessage(string text, List<Template> templates)
+        public void SetButtonMessage(List<Template> templates)
         {
             this.Message.Attachment = new Attachment(AttachmentType.template);
             this.Message.Attachment.Payload = new Payload(TemplateType.generic);
-            this.Message.Attachment.Payload.Text = text;
+            this.Message.Attachment.Payload.Elements = new List<PayloadElement>();
             foreach (var t in templates)
             {
                 var elm = new PayloadElement();
@@ -51,7 +33,7 @@ namespace Minette.Channel.Facebook
                 elm.Buttons = new List<Button>();
                 foreach (var b in t.Buttons)
                 {
-                    if (b.Type == Minette.Message.ButtonType.Postback)
+                    if (b.Type != Minette.Message.ButtonType.WebUrl)
                     {
                         elm.Buttons.Add(new Button(ButtonType.postback, b.Title, b.Payload));
                     }

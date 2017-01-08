@@ -19,21 +19,6 @@ namespace Minette.Message.Attachment
             this.Type = type;
             this.Buttons = new List<Button>();
         }
-        public void AddButton(ButtonType type, string title, string data)
-        {
-            if (this.Type == TemplateType.Confirm)
-            {
-                this.Buttons.Add(new Button(ButtonType.Postback, title, data));
-            }
-            else
-            {
-                this.Buttons.Add(new Button(type, title, data));
-            }
-        }
-        public void AddButton(string title, string data)
-        {
-            this.Buttons.Add(new Button(ButtonType.Postback, title, data));
-        }
     }
 
 }

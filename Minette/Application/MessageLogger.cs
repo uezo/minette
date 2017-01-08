@@ -18,7 +18,10 @@ namespace Minette.Application
         public string OutputText { get; set; }
         public string DatabaseName { get; set; }
         public string TableName { get; set; }
-
+        /// <summary>
+        /// Time zone for timestamp
+        /// </summary>
+        public TimeZoneInfo TimeZone { get; set; }
         public MessageLogger(string Channel)
         {
             this.StartTick = Environment.TickCount;
@@ -31,6 +34,21 @@ namespace Minette.Application
             this.MessageType = MessageType.Text;
             this.InputText = "";
             this.OutputText = "";
+            this.TimeZone = System.TimeZoneInfo.Local;
+        }
+        public MessageLogger(string Channel, TimeZoneInfo timezone)
+        {
+            this.StartTick = Environment.TickCount;
+            this.Channel = Channel;
+            this.TotalTick = 0;
+            this.Timestamp = DateTime.Now;
+            this.UserId = "";
+            this.UserName = "";
+            this.EventType = EventType.Message;
+            this.MessageType = MessageType.Text;
+            this.InputText = "";
+            this.OutputText = "";
+            this.TimeZone = timezone;
         }
         public MessageLogger(string databaseName, string tableName, string channel)
         {
@@ -46,6 +64,23 @@ namespace Minette.Application
             this.OutputText = "";
             this.DatabaseName = databaseName;
             this.TableName = tableName;
+            this.TimeZone = System.TimeZoneInfo.Local;
+        }
+        public MessageLogger(string databaseName, string tableName, string channel, TimeZoneInfo timezone)
+        {
+            this.StartTick = Environment.TickCount;
+            this.Channel = channel;
+            this.TotalTick = 0;
+            this.Timestamp = DateTime.Now;
+            this.UserId = "";
+            this.UserName = "";
+            this.EventType = EventType.Message;
+            this.MessageType = MessageType.Text;
+            this.InputText = "";
+            this.OutputText = "";
+            this.DatabaseName = databaseName;
+            this.TableName = tableName;
+            this.TimeZone = timezone;
         }
         public void Write()
         {
@@ -62,7 +97,7 @@ namespace Minette.Application
                 using (var cmd = new SqlCommand("INSERT INTO " + TableName + " VALUES (@timestamp, @channel, @totalTick, @UserId, @UserName, @EventType, @MessageType, @InputText, @OutputText)", con))
                 {
                     cmd.Parameters.Add("@timestamp", System.Data.SqlDbType.DateTime2);
-                    cmd.Parameters["@timestamp"].Value = this.Timestamp;
+                    cmd.Parameters["@timestamp"].Value = this.Timestamp + this.TimeZone.BaseUtcOffset;
                     cmd.Parameters.Add("@Channel", System.Data.SqlDbType.NVarChar);
                     cmd.Parameters["@Channel"].Value = this.Channel;
                     cmd.Parameters.Add("@totalTick", System.Data.SqlDbType.Int);

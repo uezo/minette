@@ -89,21 +89,49 @@ namespace Minette.Message
             this.PreviewImageUrl = previewUrl;
         }
         /// <summary>
-        /// Create a new Confirmation Response
+        /// Set confirmation buttons to Response
         /// </summary>
         /// <param name="title">Title of confirmation message box</param>
         /// <param name="text">Body text of confirmation message box</param>
+        /// <param name="yesType">Type for YES button</param>
         /// <param name="yesLabel">Label for YES button</param>
         /// <param name="yesData">Data for YES button</param>
+        /// <param name="noType">Type for NO button</param>
         /// <param name="noLabel">Label for NO button</param>
         /// <param name="noData">Data for NO button</param>
-        public void SetConfirmTemplate(string title, string text, string yesLabel, string yesData, string noLabel, string noData)
+        public void SetConfirmTemplate(string title, string text, ButtonType yesType, string yesLabel, string yesData, ButtonType noType, string noLabel, string noData)
         {
             var t = new Template(TemplateType.Confirm);
             t.Title = title;
             t.Text = text;
-            t.AddButton(yesLabel, yesData);
-            t.AddButton(noLabel, noData);
+            t.Buttons.Add(new Button(yesType, yesLabel, yesData));
+            t.Buttons.Add(new Button(noType, noLabel, noData));
+            if (this.Templates == null)
+            {
+                this.Templates = new List<Template>();
+            }
+            else
+            {
+                this.Templates.Clear();
+            }
+            this.Templates.Add(t);
+        }
+        /// <summary>
+        /// Set buttons to Response
+        /// </summary>
+        /// <param name="title">Title of confirmation message box</param>
+        /// <param name="text">Body text of confirmation message box</param>
+        /// <param name="buttons">List of buttons you want to add</param>
+        public void SetButtonTemplate(string title, string text, List<Button> buttons)
+        {
+            var t = new Template(TemplateType.Button);
+            t.Title = title;
+            t.Text = text;
+            t.Buttons = buttons;
+            if(this.Templates == null)
+            {
+                this.Templates = new List<Template>();
+            }
             this.Templates.Add(t);
         }
     }

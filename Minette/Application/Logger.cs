@@ -17,9 +17,23 @@ namespace Minette.Application
         /// </summary>
         public string TableName { get; set; }
         /// <summary>
+        /// Time zone for timestamp
+        /// </summary>
+        public TimeZoneInfo TimeZone { get; set; }
+        /// <summary>
         /// Create a new logger
         /// </summary>
-        public Logger() { }
+        public Logger()
+        {
+            this.TimeZone = System.TimeZoneInfo.Local;
+        }
+        /// <summary>
+        /// Create a new logger with timezone
+        /// </summary>
+        public Logger(TimeZoneInfo timezone)
+        {
+            this.TimeZone = timezone;
+        }
         /// <summary>
         /// Create a new logger with data store info
         /// </summary>
@@ -27,6 +41,16 @@ namespace Minette.Application
         {
             this.DatabaseName = databaseName;
             this.TableName = tableName;
+            this.TimeZone = System.TimeZoneInfo.Local;
+        }
+        /// <summary>
+        /// Create a new logger with data store info and timezone
+        /// </summary>
+        public Logger(string databaseName, string tableName, TimeZoneInfo timezone)
+        {
+            this.DatabaseName = databaseName;
+            this.TableName = tableName;
+            this.TimeZone = timezone;
         }
         /// <summary>
         /// Write log message
@@ -47,7 +71,7 @@ namespace Minette.Application
                     using (var cmd = new SqlCommand("INSERT INTO " + TableName + " VALUES (@timestamp, @datastr)", con))
                     {
                         cmd.Parameters.Add("@timestamp", System.Data.SqlDbType.DateTime2);
-                        cmd.Parameters["@timestamp"].Value = DateTime.Now;
+                        cmd.Parameters["@timestamp"].Value = DateTime.Now + this.TimeZone.BaseUtcOffset;
                         cmd.Parameters.Add("@datastr", System.Data.SqlDbType.NVarChar);
                         cmd.Parameters["@datastr"].Value = message;
                         cmd.ExecuteNonQuery();

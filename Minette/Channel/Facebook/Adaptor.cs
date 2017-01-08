@@ -36,30 +36,44 @@ namespace Minette.Channel.Facebook
                 //リクエストのセットアップ
                 var jsonEntry = Json.Decode(decodedString);
                 var json = jsonEntry.entry[0].messaging[0];
-                var req = new Request((string)json.message.mid, "Facebook");
 
-                //テキストメッセージ
-                if (json.message.text != null)
+                //通常のメッセージとpostbackとでリクエストのセットアップが異なる
+                var req = new Request("", "Facebook");
+                if (json.message != null)
                 {
-                    req.Text = json.message.text;
+                    req.MessageId = (string)json.message.mid;
+
+                    //テキストメッセージ
+                    if (json.message.text != null)
+                    {
+                        req.Text = json.message.text;
+                        MessageLogger.InputText = req.Text;
+                    }
+                    //画像
+                    if (json.message.attachments != null && json.message.attachments[0].type == "image")
+                    {
+                        var m = new Media((string)json.message.attachments[0].payload.url);
+                        req.Media.Add(m);
+                        MessageLogger.InputText += " [media=" + m.Url + "]";
+                    }
+                    //位置
+                    if (json.message.attachments != null && json.message.attachments[0].type == "location")
+                    {
+                        var loc = new Location();
+                        loc.Latitude = json.message.attachments[0].payload.coordinates.lat;
+                        loc.Longitude = json.message.attachments[0].payload.coordinates["long"];
+                        req.Location = loc;
+                        MessageLogger.InputText += " [location=" + Json.Encode(loc) + "]";
+                    }
+                }
+                //postback
+                else
+                {
+                    //payloadをテキストとして扱う
+                    req.Text = (string)json.postback.payload;
                     MessageLogger.InputText = req.Text;
                 }
-                //画像
-                if (json.message.attachments != null && json.message.attachments[0].type == "image")
-                {
-                    var m = new Media((string)json.message.attachments[0].payload.url);
-                    req.Media.Add(m);
-                    MessageLogger.InputText += " [media=" + m.Url + "]";
-                }
-                //位置
-                if (json.message.attachments != null && json.message.attachments[0].type == "location")
-                {
-                    var loc = new Location();
-                    loc.Latitude = json.message.attachments[0].payload.coordinates.lat;
-                    loc.Longitude = json.message.attachments[0].payload.coordinates["long"];
-                    req.Location = loc;
-                    MessageLogger.InputText += " [location=" + Json.Encode(loc) + "]";
-                }
+                
                 //ユーザー情報
                 var userId = (string)json.sender.id;
                 req.User = UserManager.GetUser(userId);
@@ -80,34 +94,59 @@ namespace Minette.Channel.Facebook
                 if(res.Type == ResponseType.Text)
                 {
                     fbres.SetTextMessage(res.Text);
+                    MessageLogger.OutputText = res.Text;
                 }
                 //テンプレート
                 else if (res.Type == ResponseType.Template)
                 {
                     if (res.Templates[0].Type == Minette.Message.TemplateType.Confirm)
                     {
-                        fbres.SetConfirmMessage(res.Templates[0].Text, res.Templates[0].Buttons);
+                        fbres.SetButtonMessage(res.Templates);
                     }
-                    else if (res.Templates.Count == 1)
+                    else if (res.Templates[0].Type == Minette.Message.TemplateType.Button)
                     {
-                        fbres.SetButtonMessage(res.Templates[0].Text, res.Templates);
+                        fbres.SetButtonMessage(res.Templates);
                     }
                     else
                     {
                         fbres.SetListMessage(res);
                     }
+                    MessageLogger.OutputText = "templates: " + Json.Encode(res.Templates);
                 }
                 //クイックリプライ
                 else if (res.Type == ResponseType.QuickReply)
                 {
                     fbres.SetQuickReplyMessage(res.Text, res.QuickReplies);
+                    MessageLogger.OutputText = res.Text + " / quick: " + Json.Encode(res.QuickReplies);
                 }
                 //except Text, Template and QuickReply is not supported now.
                 else
                 {
                     fbres.SetTextMessage(res.Text);
+                    MessageLogger.OutputText = res.Text;
                 }
+
                 await SendResponseAsync(fbres);
+
+                //テンプレートメッセージ以外でテンプレートがあればメッセージを追加
+                if (res.Type != ResponseType.Template && res.Templates != null && res.Templates.Count > 0)
+                {
+                    fbres = new Response(userId);
+                    if (res.Templates[0].Type == Minette.Message.TemplateType.Confirm)
+                    {
+                        fbres.SetButtonMessage(res.Templates);
+                    }
+                    else if (res.Templates[0].Type == Minette.Message.TemplateType.Button)
+                    {
+                        fbres.SetButtonMessage(res.Templates);
+                    }
+                    else
+                    {
+                        fbres.SetListMessage(res);
+                    }
+                    MessageLogger.OutputText += " / additional templates: " + Json.Encode(res.Templates);
+                    await SendResponseAsync(fbres);
+                }
             }
             catch (Exception ex)
             {
@@ -123,6 +162,10 @@ namespace Minette.Channel.Facebook
             req.Method = "POST";
             req.ContentType = "application/json; charset=UTF-8";
             var reqJson = Json.Encode(res, JsonCase.Snake);
+            if(MinetteCore.Debug == true)
+            {
+                MinetteCore.Logger.Write("[Facebook]res : " + reqJson);
+            }
             byte[] postDataBytes = System.Text.Encoding.UTF8.GetBytes(reqJson);
             req.ContentLength = postDataBytes.Length;
             var reqStream = req.GetRequestStream();

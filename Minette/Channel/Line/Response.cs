@@ -7,10 +7,6 @@ namespace Minette.Channel.Line
     {
         public string replyToken { get; set; }
         public List<SendMessage> messages { get; set; }
-        //public Response()
-        //{
-        //    this.messages = new List<SendMessage>();
-        //}
         public Response(string replyToken)
         {
             this.replyToken = replyToken;
@@ -93,47 +89,61 @@ namespace Minette.Channel.Line
             var actions = new List<TemplateAction>();
             foreach (var b in response.Templates[0].Buttons)
             {
-                if (b.Type == ButtonType.Postback)
-                {
-                    actions.Add(new TemplateAction()
-                    {
-                        type = "postback",
-                        label = b.Title,
-                        data = b.Payload
-                    });
-                }
-                else
-                {
-                    actions.Add(new TemplateAction()
-                    {
-                        type = "uri",
-                        label = b.Title,
-                        uri = b.Url
-                    });
-                }
+                actions.Add(new TemplateAction(b));
             }
             AddButtonMessage(response.Templates[0].Text, response.Templates[0].Text, response.Templates[0].Title, null, actions);
         }
-        public void AddConfirmMessage(string text, string altText, string yesLabel, string yesData, string noLabel, string noData)
+        public void AddConfirmMessage(string text, string altText, ButtonType yesType, string yesLabel, string yesData, ButtonType noType, string noLabel, string noData)
         {
             var msg = new SendMessage();
             msg.type = "template";
             msg.altText = altText;
             var template = new ConfirmTemplate();
             template.text = text;
-            template.actions.Add(new Action() { type = "postback", data = yesData, label = yesLabel });
-            template.actions.Add(new Action() { type = "postback", data = noData, label = noLabel });
+            var yesAction = new Action() { label = yesLabel };
+            if(yesType == ButtonType.Postback)
+            {
+                yesAction.type = "postback";
+                yesAction.data = yesData;
+            }
+            else if (yesType == ButtonType.WebUrl)
+            {
+                yesAction.type = "uri";
+                yesAction.uri = yesData;
+            }
+            else
+            {
+                yesAction.type = "message";
+                yesAction.text = yesData;
+            }
+            var noAction = new Action() { label = noLabel };
+            if (noType == ButtonType.Postback)
+            {
+                noAction.type = "postback";
+                noAction.data = noData;
+            }
+            else if (noType == ButtonType.WebUrl)
+            {
+                noAction.type = "uri";
+                noAction.uri = noData;
+            }
+            else
+            {
+                noAction.type = "message";
+                noAction.text = noData;
+            }
+            template.actions.Add(yesAction);
+            template.actions.Add(noAction);
             msg.template = template;
             this.messages.Add(msg);
         }
         public void AddConfirmMessage(Minette.Message.Response response)
         {
+            var btns = response.Templates[0].Buttons;
             AddConfirmMessage(
             response.Templates[0].Text, response.Templates[0].Text,
-                response.Templates[0].Buttons[0].Title,
-                response.Templates[0].Buttons[0].Payload,
-                response.Templates[0].Buttons[1].Title,
-                response.Templates[0].Buttons[1].Payload
+                btns[0].Type, btns[0].Title, btns[0].Type == ButtonType.WebUrl ? btns[0].Url : btns[0].Payload,
+                btns[1].Type, btns[1].Title, btns[1].Type == ButtonType.WebUrl ? btns[1].Url : btns[1].Payload
             );
         }
         public void AddCarouselMessage(string altText, List<Column> columns)
@@ -154,24 +164,7 @@ namespace Minette.Channel.Line
                 var actions = new List<TemplateAction>();
                 foreach (var b in t.Buttons)
                 {
-                    if (b.Type == ButtonType.Postback)
-                    {
-                        actions.Add(new TemplateAction()
-                        {
-                            type = "postback",
-                            label = b.Title,
-                            data = b.Payload
-                        });
-                    }
-                    else
-                    {
-                        actions.Add(new TemplateAction()
-                        {
-                            type = "uri",
-                            label = b.Title,
-                            uri = b.Url
-                        });
-                    }
+                    actions.Add(new TemplateAction(b));
                 }
                 var c = new Column();
                 c.actions = actions;
@@ -227,6 +220,7 @@ namespace Minette.Channel.Line
         public string label { get; set; }
         public string text { get; set; }
         public string data { get; set; }
+        public string uri { get; set; }
         public string linkUri { get; set; }
         public ImageapArea area { get; set; }
         public Action() { }
@@ -314,11 +308,24 @@ namespace Minette.Channel.Line
         public string data { get; set; }
         public string uri { get; set; }
         public TemplateAction() { }
-        public TemplateAction(string label, string data)
+        public TemplateAction(Minette.Message.Attachment.Button b)
         {
-            this.type = "postback";
-            this.label = label;
-            this.data = data;
+            this.label = b.Title;
+            if (b.Type == ButtonType.Postback)
+            {
+                this.type = "postback";
+                this.data = b.Payload;
+            }
+            else if (b.Type == ButtonType.WebUrl)
+            {
+                this.type = "uri";
+                this.uri = b.Url;
+            }
+            else
+            {
+                this.type = "message";
+                this.text = b.Payload;
+            }
         }
     }
 }

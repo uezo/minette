@@ -63,8 +63,6 @@
     <Compile Include="Application\Tagger.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserManager.cs" />
-    <Compile Include="Channel\Facebook\Facebook.cs" />
-    <Compile Include="Channel\Line\Line.cs" />
     <Compile Include="Channel\Text\Adaptor.cs" />
     <Compile Include="Message\Types.cs" />
     <Compile Include="Core.cs" />

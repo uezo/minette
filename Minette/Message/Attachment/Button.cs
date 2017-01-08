@@ -17,7 +17,7 @@
             {
                 this.Url = data;
             }
-            else if (type == ButtonType.Postback)
+            else
             {
                 this.Payload = data;
             }
